@@ -1,0 +1,5 @@
+services:
+  testing:
+    image: nginx:latest
+    volumes:
+      - ".:/data"
