@@ -1,5 +1,6 @@
 import os
 import telebot
+from typing import Optional
 
 from .log import logger
 
@@ -14,7 +15,7 @@ def create_bot_client():
     return client
 
 
-def send_report(report: str):
+def send_report(report: str, alert: bool[bool] = None):
     client = create_bot_client()
     if client is None:
         return
@@ -31,6 +32,7 @@ def send_report(report: str):
             chat_id=chat_id,
             text=report,
             message_thread_id=thread_id,
+            disable_notification=not alert,
         )
     except Exception as err:
         logger.error(err)
