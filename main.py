@@ -61,7 +61,7 @@ async def process_webhook(request: Request, background_tasks: BackgroundTasks):
 
     data = await request.json()
     logger.debug('event_type:', event_type)
-    logger.debug(data)
+    logger.debug('%s', data)
 
     # handler event
     if event_type == 'push':
