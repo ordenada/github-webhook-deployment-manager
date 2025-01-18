@@ -7,13 +7,14 @@ def push_controller(data: dict):
     sender_name: str = data['sender']['login']
     sender_avatar: str = data['sender']['avatar_url']
     commits: list[str] = [commit['message'] for commit in data['commits']]
+    repository = data['repository']['full_name']
 
     added_list: list[str] = data['head_commit']['added']
     removed_list: list[str] = data['head_commit']['removed']
     modified_list: list[str] = data['head_commit']['modified']
 
     report = '\n'.join(
-        [f'📌 New Push by {sender_name}', '', 'Commits:']
+        [f'📌 New Push by {sender_name}: {repository}', '', 'Commits:']
         + [f'📌 {commit}' for commit in commits]
         + ['']
         + [f'🍏 {line}' for line in added_list]
