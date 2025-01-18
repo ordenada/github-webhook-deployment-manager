@@ -40,6 +40,7 @@ def verify_signature(payload_body: bytes, secret_token: str, signature_header: s
 @app.post('/webhook')
 async def process_webhook(request: Request):
     signature_header = request.headers.get('x-hub-signature-256')
+    event_type = request.headers.get('X-GitHub-Event')
     raw = await request.body()
 
     verify_signature(raw, SECRET, signature_header)
@@ -49,6 +50,7 @@ async def process_webhook(request: Request):
         raise HTTPException(status_code=415, detail='Content-Type must be application/json')
 
     data = await request.json()
+    print('event_type:', event_type)
     print(data)
     return Response(status_code=204)
 
