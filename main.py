@@ -54,4 +54,7 @@ async def process_webhook(request: Request):
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='localhost', port=3000)
+    host = os.environ.get('HOST', 'localhost')
+    port_str = os.environ.get('PORT', '3000')
+    port = int(port_str)
+    uvicorn.run(app, host=host, port=port)
