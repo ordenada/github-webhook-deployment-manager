@@ -15,7 +15,7 @@ def create_bot_client():
     return client
 
 
-def send_report(report: str, alert: bool[bool] = None):
+def send_report(report: str, markdown: Optional[bool] = None, alert: bool[bool] = None):
     client = create_bot_client()
     if client is None:
         return
@@ -32,6 +32,7 @@ def send_report(report: str, alert: bool[bool] = None):
             chat_id=chat_id,
             text=report,
             message_thread_id=thread_id,
+            parse_mode='Markdown' if markdown else None,
             disable_notification=not alert,
         )
     except Exception as err:
