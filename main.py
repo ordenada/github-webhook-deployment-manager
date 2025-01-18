@@ -71,4 +71,5 @@ if __name__ == '__main__':
     host = os.environ.get('HOST', 'localhost')
     port_str = os.environ.get('PORT', '3000')
     port = int(port_str)
+    logger.debug('Starting in %s:%d', host, port)
     uvicorn.run(app, host=host, port=port)
