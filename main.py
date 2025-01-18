@@ -39,7 +39,7 @@ def verify_signature(payload_body: bytes, secret_token: str, signature_header: s
 
 @app.post('/webhook')
 async def process_webhook(request: Request):
-    signature_header = request.headers.get('x-hub-signature-256')
+    signature_header = request.headers.get('X-Hub-Signature-256')
     event_type = request.headers.get('X-GitHub-Event')
     raw = await request.body()
 
