@@ -1,5 +1,8 @@
+import os
 import logging
 from colorlog import ColoredFormatter
+
+log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
 
 # Set the format for the terminal
 console_handler = logging.StreamHandler()
@@ -21,6 +24,6 @@ file_handler.setFormatter(file_formatter)
 
 # Config the logger
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(log_level)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
