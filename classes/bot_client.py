@@ -10,8 +10,8 @@ def create_bot_client():
         logger.error('No set TELEGRAM_BOT_TOKEN')
         return
 
-    token = os.environ['TELEGRAM_BOT_TOKEN']
-    client = telebot.TeleBot(token=token)
+    TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+    client = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN)
     return client
 
 
@@ -20,18 +20,18 @@ def send_report(report: str, markdown: Optional[bool] = None, alert: Optional[bo
     if client is None:
         return
     
-    chat_id = os.environ.get('TELEGRAM_CHAT_ID')
+    TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
     try:
-        chat_id = int(chat_id)
+        TELEGRAM_CHAT_ID = int(TELEGRAM_CHAT_ID)
     except:
         pass
-    thread_id = os.environ.get('TELEGRAM_THREAD_ID')
+    TELEGRAM_THREAD_ID = os.environ.get('TELEGRAM_THREAD_ID')
     
     try:
         client.send_message(
-            chat_id=chat_id,
+            chat_id=TELEGRAM_CHAT_ID,
             text=report,
-            message_thread_id=thread_id,
+            message_thread_id=TELEGRAM_THREAD_ID,
             parse_mode='Markdown' if markdown else None,
             disable_notification=not alert,
         )
