@@ -4,6 +4,7 @@ from .bot_client import send_report
 def push_controller(data: dict):
     logger.info('receive a "push" event')
 
+    ref = data['ref']
     sender_name: str = data['sender']['login']
     sender_avatar: str = data['sender']['avatar_url']
     commits: list[str] = [commit['message'] for commit in data['commits']]
@@ -29,6 +30,7 @@ def push_controller(data: dict):
     else:
         alert = False
 
+    report_list.extend(['', f'ref: {ref}'])
 
     report = '\n'.join(report_list)
 
