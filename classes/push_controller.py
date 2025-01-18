@@ -13,13 +13,17 @@ def push_controller(data: dict):
     removed_list: list[str] = data['head_commit']['removed']
     modified_list: list[str] = data['head_commit']['modified']
 
-    report = '\n'.join(
-        [f'📌 New Push by {sender_name}: {repository}', '', 'Commits:']
-        + [f'📌 {commit}' for commit in commits]
-        + ['']
-        + [f'🍏 {line}' for line in added_list]
-        + [f'🍎 {line}' for line in removed_list]
-        + [f'🍊 {line}' for line in modified_list]
-    )
+    report_list = [
+        f'📌 New Push by {sender_name}: {repository}',
+        '',
+        'Commits:',
+    ]
+    report_list.extend([f'📌 {commit}' for commit in commits])
+    report_list.extend(+ [''])
+    report_list.extend([f'🍏 {line}' for line in added_list])
+    report_list.extend([f'🍎 {line}' for line in removed_list])
+    report_list.extend([f'🍊 {line}' for line in modified_list])
+
+    report = '\n'.join(report_list)
 
     send_report(report)
