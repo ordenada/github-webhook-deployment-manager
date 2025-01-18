@@ -24,6 +24,20 @@ def push_controller(data: dict):
     report_list.extend([f'🍎 {line}' for line in removed_list])
     report_list.extend([f'🍊 {line}' for line in modified_list])
 
+    if ref == 'refs/heads/master' or ref == 'refs/heads/main':
+        alert = True
+    else:
+        alert = False
+
+
     report = '\n'.join(report_list)
 
-    send_report(report)
+    try:
+        send_report(report, markdown=True, alert=alert)
+    except:
+        logger.warning('Cannot send the report with Markdown')
+        try:
+            send_report(report, alert=alert)
+        except Exception as err:
+            logger.error('Cannot send the report without Markdown')
+            logger.error(err)
