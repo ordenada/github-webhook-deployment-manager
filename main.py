@@ -7,7 +7,7 @@ import hmac
 import hashlib
 
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 import uvicorn
 
 
@@ -50,7 +50,7 @@ async def process_webhook(request: Request):
 
     data = await request.json()
     print(data)
-    return JSONResponse(content=None, status_code=204)
+    return Response(status_code=204)
 
 
 if __name__ == '__main__':
