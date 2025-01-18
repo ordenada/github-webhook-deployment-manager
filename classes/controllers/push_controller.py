@@ -1,5 +1,6 @@
 from ..log import logger
 from ..bot_client import send_report
+from ..update import update_repository
 
 def push_controller(data: dict):
     logger.info('receive a "push" event')
@@ -8,14 +9,15 @@ def push_controller(data: dict):
     sender_name: str = data['sender']['login']
     sender_avatar: str = data['sender']['avatar_url']
     commits: list[str] = [commit['message'] for commit in data['commits']]
-    repository = data['repository']['full_name']
+    repository = data['repository']['name']
+    repository_full_name = data['repository']['full_name']
 
     added_list: list[str] = data['head_commit']['added']
     removed_list: list[str] = data['head_commit']['removed']
     modified_list: list[str] = data['head_commit']['modified']
 
     report_list = [
-        f'📌 New Push by {sender_name}: {repository}',
+        f'📌 New Push by {sender_name}: {repository_full_name}',
         '',
         'Commits:',
     ]
@@ -25,8 +27,11 @@ def push_controller(data: dict):
     report_list.extend([f'🍎 {line}' for line in removed_list])
     report_list.extend([f'🍊 {line}' for line in modified_list])
 
+    should_update = False
+
     if ref == 'refs/heads/master' or ref == 'refs/heads/main':
         alert = True
+        should_update = True
     else:
         alert = False
 
@@ -42,4 +47,13 @@ def push_controller(data: dict):
             send_report(report, alert=alert)
         except Exception as err:
             logger.error('Cannot send the report without Markdown')
+            logger.error(err)
+
+    # Update
+    if should_update:
+        logger.debug('updating... %s', repository)
+        try:
+            update_repository(repository=repository)
+        except Exception as err:
+            logger.error('Cannot update the repository: %s', repository)
             logger.error(err)
