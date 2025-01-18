@@ -95,7 +95,7 @@ def update_repository(repository: str):
         return
 
     # restart the repository
-    logger.debug('pm2 start %s', PM2_NAME)
+    logger.debug('pm2 restart %s', PM2_NAME)
     restart_result = subprocess.run(
         args=['pm2', 'restart', PM2_NAME],
         capture_output=True,
