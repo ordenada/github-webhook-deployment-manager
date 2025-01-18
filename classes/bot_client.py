@@ -15,7 +15,7 @@ def create_bot_client():
     return client
 
 
-def send_report(report: str, markdown: Optional[bool] = None, alert: bool[bool] = None):
+def send_report(report: str, markdown: Optional[bool] = None, alert: Optional[bool] = None):
     client = create_bot_client()
     if client is None:
         return
