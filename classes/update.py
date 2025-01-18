@@ -34,7 +34,7 @@ def update_repository(repository: str):
     )
     if git_fetch_result.stdout:
         logger.debug('git fetch results: %s', git_fetch_result.stdout)
-    if git_fetch_result.stderr:
+    if git_fetch_result.returncode != 0 and git_fetch_result.stderr:
         logger.error('Error to git fetch: %s', repository)
         logger.error('Error of git fetch: %s', git_fetch_result.stderr)
         send_report(
@@ -51,7 +51,7 @@ def update_repository(repository: str):
     )
     if git_pull_result.stdout:
         logger.debug('git pull results: %s', git_pull_result.stdout)
-    if git_pull_result.stderr:
+    if git_pull_result.returncode != 0 and git_pull_result.stderr:
         logger.error('Error to git pull: %s', repository)
         logger.error('Error of git pull: %s', git_pull_result.stderr)
         send_report(
@@ -68,7 +68,7 @@ def update_repository(repository: str):
     )
     if install_result.stdout:
         logger.debug('install results: %s', install_result.stdout)
-    if install_result.stderr:
+    if install_result.returncode != 0 and install_result.stderr:
         logger.error('Error to install: %s', repository)
         logger.error('Error of install: %s', install_result.stderr)
         send_report(
@@ -85,7 +85,7 @@ def update_repository(repository: str):
     )
     if build_result.stdout:
         logger.debug('build results: %s', build_result.stdout)
-    if build_result.stderr:
+    if build_result.returncode != 0 and build_result.stderr:
         logger.error('Error to build: %s', repository)
         logger.error('Error of build: %s', build_result.stderr)
         send_report(
@@ -102,7 +102,7 @@ def update_repository(repository: str):
     )
     if restart_result.stdout:
         logger.debug('restart results: %s', restart_result.stdout)
-    if restart_result.stderr:
+    if restart_result.returncode != 0 and restart_result.stderr:
         logger.error('Error to restart: %s', repository)
         logger.error('Error of restart: %s', restart_result.stderr)
         send_report(
