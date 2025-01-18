@@ -20,7 +20,7 @@ def push_controller(data: dict):
         'Commits:',
     ]
     report_list.extend([f'📌 {commit}' for commit in commits])
-    report_list.extend(+ [''])
+    report_list.extend([''])
     report_list.extend([f'🍏 {line}' for line in added_list])
     report_list.extend([f'🍎 {line}' for line in removed_list])
     report_list.extend([f'🍊 {line}' for line in modified_list])
