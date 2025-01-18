@@ -10,6 +10,8 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import Response
 import uvicorn
 
+from classes.push_controller import push_controller
+from classes.log import logger
 
 app = FastAPI()
 
@@ -50,8 +52,18 @@ async def process_webhook(request: Request):
         raise HTTPException(status_code=415, detail='Content-Type must be application/json')
 
     data = await request.json()
-    print('event_type:', event_type)
-    print(data)
+    logger.debug('event_type:', event_type)
+    logger.debug(data)
+
+    # handler event
+    if event_type == 'push':
+        try:
+            push_controller(data)
+        except Exception as err:
+            logger.error('Cannot run the "push" controller')
+            logger.error(err)
+
+
     return Response(status_code=204)
 
 
