@@ -3,7 +3,7 @@ import pathlib
 import subprocess
 
 from .log import logger
-from .bot_client import send_report
+from .bot_client import send_report, edit_report_message, delete_report_message
 
 
 def update_repository(repository: str):
@@ -25,6 +25,8 @@ def update_repository(repository: str):
     os.chdir(current_folder)
     logger.debug('cwd is %s', os.getcwd())
 
+    message_id = send_report('🔄 _Updating..._', markdown=True)
+
     # fetch the repository
     logger.debug('git fetch origin')
     git_fetch_result = subprocess.run(
@@ -41,6 +43,7 @@ def update_repository(repository: str):
             f'⚠️ Cannot git fetch {repository}: {git_fetch_result.stderr}',
             alert=True,
         )
+        delete_report_message(message_id)
         return
 
     # pull the repository
@@ -58,8 +61,14 @@ def update_repository(repository: str):
             f'⚠️ Cannot git pull {repository}: {git_pull_result.stderr}',
             alert=True,
         )
+        delete_report_message(message_id)
         return
 
+    message_id = edit_report_message(
+        message_id=message_id,
+        report='📦 _Installing..._',
+        markdown=True,
+    )
     # install the repository
     logger.debug('bun install')
     install_result = subprocess.run(
@@ -75,7 +84,14 @@ def update_repository(repository: str):
             f'⚠️ Cannot install {repository}: {install_result.stderr}',
             alert=True,
         )
+        delete_report_message(message_id)
         return
+
+    message_id = edit_report_message(
+        message_id=message_id,
+        report='🛠 _Building..._',
+        markdown=True,
+    )
 
     # build the repository
     logger.debug('bun run build')
@@ -92,7 +108,14 @@ def update_repository(repository: str):
             f'⚠️ Cannot build {repository}: {build_result.stderr}',
             alert=True,
         )
+        delete_report_message(message_id)
         return
+
+    message_id = edit_report_message(
+        message_id=message_id,
+        report='⏫ _Restart..._',
+        markdown=True,
+    )
 
     # restart the repository
     logger.debug('pm2 restart %s', PM2_NAME)
@@ -109,9 +132,11 @@ def update_repository(repository: str):
             f'⚠️ Cannot restart {repository}: {restart_result.stderr}',
             alert=True,
         )
+        delete_report_message(message_id)
         return
 
     # All right
+    delete_report_message(message_id)
     send_report(
         f'✅ App updated {repository}',
         alert=True,
