@@ -60,7 +60,7 @@ async def process_webhook(request: Request, background_tasks: BackgroundTasks):
         raise HTTPException(status_code=415, detail='Content-Type must be application/json')
 
     data = await request.json()
-    logger.debug('event_type:', event_type)
+    logger.debug('event_type: %s', event_type)
     logger.debug('%s', data)
 
     # handler event
