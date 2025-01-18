@@ -6,7 +6,7 @@ import os
 import hmac
 import hashlib
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.responses import Response
 import uvicorn
 
@@ -16,6 +16,14 @@ from classes.log import logger
 app = FastAPI()
 
 SECRET = os.environ['SECRET']
+
+
+def taskable_push_controller(data: dict):
+    try:
+        push_controller(data)
+    except Exception as err:
+        logger.error('Cannot run the "push" controller')
+        logger.error(err)
 
 
 def verify_signature(payload_body: bytes, secret_token: str, signature_header: str):
@@ -40,7 +48,7 @@ def verify_signature(payload_body: bytes, secret_token: str, signature_header: s
 
 
 @app.post('/webhook')
-async def process_webhook(request: Request):
+async def process_webhook(request: Request, background_tasks: BackgroundTasks):
     signature_header = request.headers.get('X-Hub-Signature-256')
     event_type = request.headers.get('X-GitHub-Event')
     raw = await request.body()
@@ -57,11 +65,7 @@ async def process_webhook(request: Request):
 
     # handler event
     if event_type == 'push':
-        try:
-            push_controller(data)
-        except Exception as err:
-            logger.error('Cannot run the "push" controller')
-            logger.error(err)
+        background_tasks.add_task(taskable_push_controller, data)
 
 
     return Response(status_code=204)
