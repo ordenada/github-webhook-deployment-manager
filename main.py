@@ -10,7 +10,7 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import Response
 import uvicorn
 
-from classes.push_controller import push_controller
+from classes.controllers.push_controller import push_controller
 from classes.log import logger
 
 app = FastAPI()

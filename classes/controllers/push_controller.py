@@ -1,5 +1,5 @@
-from .log import logger
-from .bot_client import send_report
+from ..log import logger
+from ..bot_client import send_report
 
 def push_controller(data: dict):
     logger.info('receive a "push" event')
