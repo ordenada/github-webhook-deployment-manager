@@ -50,7 +50,7 @@ async def process_webhook(request: Request):
 
     data = await request.json()
     print(data)
-    return JSONResponse(status_code=204)
+    return JSONResponse(content=None, status_code=204)
 
 
 if __name__ == '__main__':
