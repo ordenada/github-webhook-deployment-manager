@@ -39,6 +39,7 @@ def send_report(report: str, markdown: Optional[bool] = None, alert: Optional[bo
         return sent_message.message_id
     except Exception as err:
         logger.error(err)
+        raise err
 
 
 def edit_report_message(message_id: int, report: str, markdown: Optional[bool] = None):
