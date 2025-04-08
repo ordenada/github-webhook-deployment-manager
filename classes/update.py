@@ -143,6 +143,7 @@ def update_repository(repository: str):
     build_result = subprocess.run(
         args=['bun', 'run', 'build'],
         capture_output=True,
+        text=True,
     )
     if build_result.stdout:
         logger.debug('build results: %s', build_result.stdout)
