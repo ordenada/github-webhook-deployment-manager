@@ -109,6 +109,31 @@ def update_repository(repository: str):
 
     message_id = edit_report_message(
         message_id=message_id,
+        report='💼 _Migrating..._',
+        markdown=True,
+    )
+
+    # migrate the database
+    logger.debug('bunx prisma db push')
+    migrating_result = subprocess.run(
+        args=['bunx', 'prisma', 'db', 'push'],
+        capture_output=True,
+        text=True,
+    )
+    if migrating_result.stdout:
+        logger.debug('migrating results: %s', migrating_result.stdout)
+    if migrating_result.returncode != 0 and migrating_result.stderr:
+        logger.error('Error to migrate: %s', repository)
+        logger.error('Error of migrate: %s', migrating_result.stderr)
+        send_report(
+            f'⚠️ Cannot migrate {repository}: {migrating_result.stderr}',
+            alert=True,
+        )
+        delete_report_message(message_id)
+        return
+
+    message_id = edit_report_message(
+        message_id=message_id,
         report='🛠 _Building..._',
         markdown=True,
     )
