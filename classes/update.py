@@ -51,6 +51,7 @@ def update_repository(repository: str):
     git_pull_result = subprocess.run(
         args=['git', 'pull', 'origin', GIT_BRANCH],
         capture_output=True,
+        text=True,
     )
     if git_pull_result.stdout:
         logger.debug('git pull results: %s', git_pull_result.stdout)
@@ -122,6 +123,7 @@ def update_repository(repository: str):
     restart_result = subprocess.run(
         args=['pm2', 'restart', PM2_NAME],
         capture_output=True,
+        text=True,
     )
     if restart_result.stdout:
         logger.debug('restart results: %s', restart_result.stdout)
