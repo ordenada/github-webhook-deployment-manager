@@ -2,6 +2,6 @@
 
 rm -r code.zip
 
-git archive --format=zip --output=code.zip master
+git archive --format=zip --output=code.zip main
 
 echo "Packaged"
