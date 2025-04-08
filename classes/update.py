@@ -27,6 +27,25 @@ def update_repository(repository: str):
 
     message_id = send_report('🔄 _Updating..._', markdown=True)
 
+    # remove non-committed changes
+    logger.debug('git checkout -- .')
+    git_checkout_result = subprocess.run(
+        args=['git', 'checkout', '--', '.'],
+        capture_output=True,
+        text=True,
+    )
+    if git_checkout_result.stdout:
+        logger.debug('git checkout results:', git_checkout_result.stdout)
+    if git_checkout_result.returncode != 0 and git_checkout_result.stderr:
+        logger.error('Error to git checkout: %s', repository)
+        logger.error('Error of git checkout: %s', git_checkout_result.stderr)
+        send_report(
+            f'⚠️ Cannot git checkout {repository}: {git_checkout_result.stderr}',
+            alert=True,
+        )
+        delete_report_message(message_id)
+        return
+
     # fetch the repository
     logger.debug('git fetch origin')
     git_fetch_result = subprocess.run(
