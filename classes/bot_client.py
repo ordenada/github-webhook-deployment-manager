@@ -1,32 +1,39 @@
 import os
 import telebot
+import telebot.types
 from typing import Optional
 
 from .log import logger
+from .exceptions import MissingEnvironmentVariableException, TelegramException
 
 
-TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
+_TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 try:
-    TELEGRAM_CHAT_ID = int(TELEGRAM_CHAT_ID)
+    if _TELEGRAM_CHAT_ID is None:
+        raise MissingEnvironmentVariableException('TELEGRAM_CHAT_ID')
+    TELEGRAM_CHAT_ID = int(_TELEGRAM_CHAT_ID)
 except:
     pass
-TELEGRAM_THREAD_ID = os.environ.get('TELEGRAM_THREAD_ID')
+
+_TELEGRAM_THREAD_ID = os.environ.get('TELEGRAM_THREAD_ID')
+try:
+    TELEGRAM_THREAD_ID = int(_TELEGRAM_THREAD_ID) \
+        if _TELEGRAM_THREAD_ID is not None \
+            else None
+except:
+    pass
 
 
 def create_bot_client():
-    if os.environ.get('TELEGRAM_BOT_TOKEN') is None:
-        logger.error('No set TELEGRAM_BOT_TOKEN')
-        return
-
-    TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+    TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
+    if TELEGRAM_BOT_TOKEN is None:
+        raise MissingEnvironmentVariableException('TELEGRAM_BOT_TOKEN')
     client = telebot.TeleBot(token=TELEGRAM_BOT_TOKEN)
     return client
 
 
 def send_report(report: str, markdown: Optional[bool] = None, alert: Optional[bool] = None):
     client = create_bot_client()
-    if client is None:
-        return
     
     try:
         sent_message = client.send_message(
@@ -39,13 +46,11 @@ def send_report(report: str, markdown: Optional[bool] = None, alert: Optional[bo
         return sent_message.message_id
     except Exception as err:
         logger.error(err)
-        raise err
+        raise TelegramException() from err
 
 
 def edit_report_message(message_id: int, report: str, markdown: Optional[bool] = None):
     client = create_bot_client()
-    if client is None:
-        return
 
     try:
         sent_message = client.edit_message_text(
@@ -54,15 +59,17 @@ def edit_report_message(message_id: int, report: str, markdown: Optional[bool] =
             message_id=message_id,
             parse_mode='Markdown' if markdown else None,
         )
+
+        if not isinstance(sent_message, telebot.types.Message):
+            raise TelegramException()
         return sent_message.message_id
     except Exception as err:
         logger.error(err)
+        raise TelegramException() from err
 
 
 def delete_report_message(message_id: int):
     client = create_bot_client()
-    if client is None:
-        return
     
     try:
         client.delete_message(
@@ -71,3 +78,4 @@ def delete_report_message(message_id: int):
         )
     except Exception as err:
         logger.error(err)
+        raise TelegramException() from err

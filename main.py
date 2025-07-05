@@ -12,6 +12,7 @@ import uvicorn
 
 from classes.controllers.push_controller import push_controller
 from classes.log import logger
+from classes.exceptions import MissingEnvironmentVariableException, TelegramException
 
 app = FastAPI()
 
@@ -53,6 +54,9 @@ async def process_webhook(request: Request, background_tasks: BackgroundTasks):
     event_type = request.headers.get('X-GitHub-Event')
     raw = await request.body()
 
+    if signature_header is None:
+        raise HTTPException(400, 'Missing signature')
+
     verify_signature(raw, SECRET, signature_header)
 
     content_type = request.headers.get('Content-Type')
@@ -64,9 +68,13 @@ async def process_webhook(request: Request, background_tasks: BackgroundTasks):
     logger.debug('%s', data)
 
     # handler event
-    if event_type == 'push':
-        background_tasks.add_task(taskable_push_controller, data)
-
+    try:
+        if event_type == 'push':
+            background_tasks.add_task(taskable_push_controller, data)
+    except MissingEnvironmentVariableException as err:
+        raise HTTPException(503, str(err)) from err
+    except TelegramException as err:
+        raise HTTPException(500, 'Cannot report activity') from err
 
     return Response(status_code=204)
 

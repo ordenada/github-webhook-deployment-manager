@@ -4,11 +4,19 @@ import subprocess
 
 from .log import logger
 from .bot_client import send_report, edit_report_message, delete_report_message
+from .exceptions import MissingEnvironmentVariableException
 
 
 def update_repository(repository: str):
-    GIT_BRANCH = os.environ['GIT_BRANCH']
-    PM2_NAME = os.environ['PM2_NAME']
+    try:
+        GIT_BRANCH = os.environ['GIT_BRANCH']
+    except Exception as err:
+        raise MissingEnvironmentVariableException('GIT_BRANCH') from err
+    
+    try:
+        PM2_NAME = os.environ['PM2_NAME']
+    except Exception as err:
+        raise MissingEnvironmentVariableException('PM2_NAME') from err
 
     home = pathlib.Path.home()
     workdir = home.joinpath('repositories')
